@@ -96,9 +96,7 @@ function checkRowsPerPageValue() {
 // показать текущие элементы
 function showCurrentElem(rowsPerPageValue, pageCounter) {
 
-   console.log(pageCounter);
    let elemsLeft = currentArr.length - (rowsPerPageValue * pageCounter);
-   console.log(elemsLeft);
    if( elemsLeft < rowsPerPageValue) {
       currentElemsShown.innerHTML = (+pageCounter + 1) + '-' + elemsLeft;
    } else {
