@@ -336,7 +336,7 @@ function collectionClick() {
          
          if(e.target.classList.contains('down-arrow')) {
             subTable.classList.toggle('open');
-            elem.classList.toggle('.active');
+            this.firstElementChild.classList.toggle('active');
          }
       })
    }

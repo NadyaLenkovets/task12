@@ -237,6 +237,10 @@ h6 {
   display: none;
 }
 
+.table-row.active {
+  background: #F4F2FF;
+}
+
 .table-row__body {
   padding: 11px 20px 11px 20px;
   display: flex;
@@ -258,6 +262,10 @@ h6 {
 }
 
 .table-row__body:hover {
+  background: #F4F2FF;
+}
+
+.table-row__body.active {
   background: #F4F2FF;
 }
 
