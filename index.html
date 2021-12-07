@@ -6,35 +6,140 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Frontend Everyday - Task12</title>
 
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+      <link rel="stylesheet" href="css/choices.min.css">
       <link rel="stylesheet" href="css/style.css">
    </head>
 
    <body>
       <div class="wrapper">
-        
+         <h1 class="title">Table Heading</h1>
+         <div class="top">
+            <div class="top-categories">
+               <div class="top-categories__item active" id="all">All</div>
+               <div class="top-categories__item" id="paid">Paid</div>
+               <div class="top-categories__item" id="unpaid">Unpaid</div>
+               <div class="top-categories__item" id="overdue">Overdue</div>
+            </div>
+            <div class="top-amount">
+               Total payable amount: <span class="total-amount" id="total-amount">$900.00</span> USD
+            </div>
+         </div>
+         <div class="frame">
+            <div class="frame-top">
+               <div class="filter">
+                  <div class="filter__button">
+                     <img src="img/filter.svg" alt="">
+                     <span>Filter</span>
+                  </div>
+                  
+                  <div class="filter-menu">
+                     <h4 class="filter-menu__title">Sort by:</h4>
+                     <div class="sort-by">
+                        <div class="sort-by__item">
+                           <input class="sort-by__button" name="sort-by" id="default" type="radio" onclick="createTableRows(clientsArr)">
+                           <label class="sort-by__label" for="default">Default
+                              <span></span>
+                           </label>
+                        </div>
+                        <div class="sort-by__item">
+                           <input class="sort-by__button" name="sort-by" id="first-name" type="radio" onclick="filterByFirstName(newClientsArr)">
+                           <label class="sort-by__label" for="first-name">First Name
+                              <span></span>
+                           </label>
+                        </div>
+                        <div class="sort-by__item">
+                           <input class="sort-by__button" name="sort-by" id="last-name" type="radio" onclick="filterByLastName(newClientsArr)">
+                           <label class="sort-by__label" for="last-name">Last Name
+                              <span></span>
+                           </label>
+                        </div>
+                        <div class="sort-by__item">
+                           <input class="sort-by__button" name="sort-by" id="due-date" type="radio" onclick="filterByDueDate(newClientsArr)">
+                           <label class="sort-by__label" for="due-date">Due Date
+                              <span></span>
+                           </label>
+                        </div>
+                        <div class="sort-by__item">
+                           <input class="sort-by__button" name="sort-by" id="last-login" type="radio" onclick="filterByLastLogin(newClientsArr)">
+                           <label class="sort-by__label" for="last-login">Last Login
+                              <span></span>
+                           </label>
+                        </div>
+                     </div>
+                     <h4 class="filter-menu__title">Users:</h4>
+                     <div class="users">
+                        <div class="users__item">
+                           <input class="users__button" name="users" id="all-users" type="radio" onclick="showAll()">
+                           <label class="users__label" for="all-users">All
+                              <span></span>
+                           </label>
+                        </div>
+                        <div class="users__item">
+                           <input class="users__button" name="users" id="active" type="radio" onclick="showActiveUsers(newClientsArr)">
+                           <label class="users__label" for="active">Active
+                              <span></span>
+                           </label>
+                        </div>
+                        <div class="users__item">
+                           <input class="users__button" name="users" id="inactive" type="radio" onclick="showInactiveUsers(newClientsArr)">
+                           <label class="users__label" for="inactive">Inactive
+                              <span></span>
+                           </label>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="search">
+                  <input type="text" class="search-input" id="search-input" placeholder="Search Users by Name">
+                  <div class="error" id="error">No users found</div>
+               </div>
+               <div class="pay-dues">
+                  <button class="pay-dues__button">Pay Dues</button>
+               </div>
+            </div>
+            <div class="frame-body">
+               <div class="table">
+                  <div class="table-header">
+                     <div class="table-header__item table-header__item--checkbox">
+                        <input type="checkbox" id="checkbox-all" class="checkbox-all" onchange="checkAllCheckboxes()">
+                        <label class="checkbox-all__label" for="checkbox-all"></label>
+                     </div>
+                     <div class="table-header__item table-header__item--name">Name</div>
+                     <div class="table-header__item table-header__item--user-status">User Status</div>
+                     <div class="table-header__item table-header__item--payment-status">Payment Status</div>
+                     <div class="table-header__item table-header__item--amount">Amount</div>
+                     <div class="table-header__item table-header__item--view-more"><img src="img/more.svg" alt=""></div>
+                  </div>
+                  <div class="table-body" id="table-body">
+                  </div>
+               </div>
+            </div>
+            <div class="frame-bottom">
+               <div class="rows-per-page">
+                  <label class="rows-per-page__label" for="rows-per-page">Rows per page:</label>
+                  <select class="rows-per-page__input" name="rows-per-page" id="rows-per-page">
+                     <option value="10">10</option>
+                     <option value="20">20</option>
+                     <option value="30">30</option>
+                  </select>
+               </div>
+               <div class="elems-of-total">
+                  <span class="current-elems-shown"></span> of <span class="total-elems-shown"></span>
+               </div>
+               <div class="pagination">
+                  <button class="prev-arrow"><img src="img/prev-arrow.svg" alt=""></button>
+                  <button class="next-arrow"><img src="img/next-arrow.svg" alt=""></button>
+               </div>
+            </div>
+         </div>
       </div>
 
-  
-   <!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script> -->
-   <!-- <script>
-
-      var firebaseConfig = {
-         apiKey: "AIzaSyBOiTrrj-NBK3qsCBZE-fMcnOFIpzqGsRs",
-         authDomain: "fe-task11.firebaseapp.com",
-         projectId: "fe-task11",
-         storageBucket: "fe-task11.appspot.com",
-         messagingSenderId: "780220806658",
-         appId: "1:780220806658:web:b5ee366aaf00d811c1d91b"
-      };
-      
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-
-      // update firestore settings
-      firebase.firestore().settings({ timestampsInSnapshots: true});
-   </script> -->
+   <script src="js/choices.min.js"></script>
+   <script src="js/clients.js"></script>
    <script src="js/script.js"></script>
    </body>
 
