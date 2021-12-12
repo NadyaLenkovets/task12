@@ -6,44 +6,21 @@ const checkboxAll = document.getElementById('checkbox-all');
 const searchInput = document.getElementById('search-input');
 const error = document.getElementById('error');
 const downArrows = document.getElementsByClassName('.down-arrow');
+const firstNameRadioButton = document.getElementById('first-name');
+const lastNameRadioButton = document.getElementById('last-name');
+const dueDateRadioButton = document.getElementById('due-date');
+const lastLoginRadioButton = document.getElementById('last-login');
+const activeRadioButton = document.getElementById('active');
+const inactiveRadioButton = document.getElementById('inactive');
+const categoryAll = document.getElementById('all');
+const categoryPaid = document.getElementById('paid');
+const categoryUnpaid = document.getElementById('unpaid');
+const categoryOverdue = document.getElementById('overdue');
 
 let totalAmount = document.getElementById('total-amount');
 let collection = document.querySelector('.table-body').children;  // живая коллекция всех рядов таблицы
 let viewMoreItems = document.getElementsByClassName('table-row__item--view-more');
 
-
-
-
-//  ==========  TOP CATEGORIES ITEMS ==========  //
-
-topCategoriesItems.forEach((topCategoriesItem) => {
-   topCategoriesItem.addEventListener("click", function() {
-      // всем убираем класс active
-      topCategoriesItems.forEach((topCategoriesItem) => {
-         topCategoriesItem.classList.remove('active');
-      })
-
-      // кликнутому добавляем класс active
-      this.classList.add('active');
-   })
-})
-
-
-
-//  ==========  CHECK ALL CHECKBOXES  ==========  //
-
-function checkAllCheckboxes() {
-   let checkboxes = document.querySelectorAll('.checkbox');
-   if(checkboxAll.checked) {
-      checkboxes.forEach((checkbox) => {
-         checkbox.checked = true;
-      })
-   } else {
-      checkboxes.forEach((checkbox) => {
-         checkbox.checked = false;
-      })
-   }
-}
 
 
 //  ==========  JSON  ==========  //
@@ -67,48 +44,75 @@ const paginationPrevArrow = document.querySelector('.prev-arrow');
 let rowsPerPageValue = document.getElementById('rows-per-page').value;
 let totalElemsShown = document.querySelector('.total-elems-shown');
 let currentElemsShown = document.querySelector('.current-elems-shown');
-
-
-
 let start = +rowsPerPageValue - rowsPerPageValue;
 let end = +rowsPerPageValue;
 let pageCounter = 0;
-showCurrentElem(rowsPerPageValue, pageCounter);
-showTotalElems(currentArr);
+let maxPage; // максимально возможная страница пагинации
+
+
+checkPagination();
+checkMaxPage(rowsPerPageValue);
+checkPageCounter();
 
 
 
 // ловим изменения в select
 document.getElementById('rows-per-page').addEventListener('change', checkRowsPerPageValue);
 
-
-function checkRowsPerPageValue() { 
-   rowsPerPageValue = document.getElementById('rows-per-page').value;
-   start = +rowsPerPageValue - rowsPerPageValue;
-   end = +rowsPerPageValue;
-   pageCounter = 0;
-
-   showCurrentElem(rowsPerPageValue, pageCounter);
-   showTotalElems(currentArr);
-   createTableRows(currentArr);
+function checkRowsPerPageValue() {
+   checkPagination();
+   checkMaxPage(rowsPerPageValue);
+   checkPageCounter();
 }
 
-// показать текущие элементы
-function showCurrentElem(rowsPerPageValue, pageCounter) {
 
+// показать текущие эллементы
+function showCurrentElem() {
    let elemsLeft = currentArr.length - (rowsPerPageValue * pageCounter);
    if( elemsLeft < rowsPerPageValue) {
-      currentElemsShown.innerHTML = (+pageCounter + 1) + '-' + elemsLeft;
+      currentElemsShown.innerHTML = ((pageCounter * rowsPerPageValue) + 1) + '-' + elemsLeft;
+      
    } else {
-      currentElemsShown.innerHTML = (+pageCounter + 1) + '-' + rowsPerPageValue;
+      currentElemsShown.innerHTML = ((pageCounter * rowsPerPageValue) + 1) + '-' + rowsPerPageValue;
    }
 }
 
 
 // показать общее кол-во элементов
-function showTotalElems(currentArr) {
+function showTotalElems() {
    totalElemsShown.innerHTML = currentArr.length; // общее количество table-rows 
 }
+
+
+function checkElemsLeft() {
+   let elemsLeft = currentArr.length - (rowsPerPageValue * pageCounter);
+   let nextStep;
+
+   if (elemsLeft < rowsPerPageValue) {
+      nextStep = elemsLeft;
+   } else {
+      nextStep = rowsPerPageValue;
+   }
+   return +nextStep;
+}
+
+
+function checkPagination() {
+   rowsPerPageValue = document.getElementById('rows-per-page').value;
+   pageCounter = 0;
+   start = 0;
+   end = rowsPerPageValue;
+   createTableRows(currentArr);
+   showCurrentElem();
+   showTotalElems();
+}
+
+
+// вычисляем maxPage
+function checkMaxPage(rowsPerPageValue) {
+   maxPage = Math.ceil(currentArr.length / rowsPerPageValue);
+}
+
 
 
 //  ==========  pagination next arrow  ==========  //
@@ -116,16 +120,17 @@ function showTotalElems(currentArr) {
 paginationNextArrow.addEventListener('click', function() {
    paginationPrevArrow.disabled = false;
    pageCounter++;
-   console.log(pageCounter);
-   start += +rowsPerPageValue;
-
-   checkPaginationNextArrow(rowsPerPageValue);
-
-   currentElemsShown.innerHTML = (start+1) + '-' + end;
    
+   start += +rowsPerPageValue;
+   end = +end + checkElemsLeft();
+
+   showCurrentElem();
+   currentElemsShown.innerHTML = (start+1) + '-' + end;
+   checkPageCounter(); // проверяем блокировку стрелок
    createTableRows(currentArr);
    collectionClick();
 })
+
 
 
 //  ==========  pagination prev arrow  ==========  //
@@ -133,61 +138,49 @@ paginationNextArrow.addEventListener('click', function() {
 paginationPrevArrow.addEventListener('click', function() {
    paginationNextArrow.disabled = false;
    pageCounter--;
-   console.log(pageCounter);
 
    if((end - start) < rowsPerPageValue) {
       end -= +(end - start);
    } else {
       end -= +rowsPerPageValue;
    }
-
    start -= +rowsPerPageValue;
 
-   checkPaginationPrevArrow();
-
    currentElemsShown.innerHTML = (start+1) + '-' + end;
-   
+   checkPageCounter(); // проверяем блокировку стрелок
    createTableRows(currentArr);
    collectionClick();
 })
 
 
-function checkPaginationNextArrow(rowsPerPageValue) {
-   let elemsLeft = currentArr.length - (rowsPerPageValue * pageCounter);
-   console.log(elemsLeft);
-   if( elemsLeft <= rowsPerPageValue) {
-      end += +elemsLeft;
+// блокирует пагинацию в маленьких таблицах типа unpaid
+function blockNextArrow() {
+   if (currentArr.length <= rowsPerPageValue) {
       paginationNextArrow.disabled = true;
    } else {
-      end += +rowsPerPageValue;
       paginationNextArrow.disabled = false;
    }
 }
 
-function checkPaginationPrevArrow() {
-   if(start == 0) {
+
+// проверяем pageCounter чтобы отключить пагинацию
+function checkPageCounter() {
+   if (pageCounter == (maxPage - 1)) { 
+      paginationNextArrow.disabled = true;
+   } else {
+      paginationNextArrow.disabled = false;
+   }
+
+   if (pageCounter == 0 && start == 0) {
       paginationPrevArrow.disabled = true;
    }
 }
 
-checkPaginationPrevArrow();
+        
 
-
-
-// ============  DROPDOWN CUSTOMIZATION  ============ 
-
-const multiDefault = () => {
-   const select = document.querySelector('#rows-per-page');
-   const choices = new Choices(select, {
-      searchEnabled: false,
-      itemSelectText: '',
-   });
-};
-
-multiDefault();
-                                  
 
 //  ==========  CREATE TABLE ROWS  ==========  //
+
 
 function createTableRows(clientsArr) {
    let i = 0; // счетчик для чекбоксов
@@ -221,7 +214,6 @@ function createTableRows(clientsArr) {
                      <div class="subtable-row__detail">${(clientsArr[j].sub[k].detail)}</div>
                   </div>
                   `;
-               // console.log(subTableRowTemplate);
                
                subtableBody.insertAdjacentHTML('beforeend', subTableRowTemplate);
          
@@ -295,7 +287,6 @@ createTableRows(clientsArr); // создать table-rows при запуске
 
 
 
-
 //  ==========  VIEW MORE / SHOW SUBTABLE ==========  //
 
 function collectionClick() {
@@ -347,93 +338,206 @@ collectionClick();
 
 
 
-//  ==========  TOP CATEGORIES  ==========  //
+//  ==========  CATEGORIES  ==========  //
 
-//  ==========  all  ==========  //
+let actingArr;
 
-const categoryAll = document.getElementById('all');
-categoryAll.addEventListener("click", showUsers);
+categoryAll.addEventListener('click', checkArr);
+categoryPaid.addEventListener('click', checkArr);
+categoryUnpaid.addEventListener('click', checkArr);
+categoryOverdue.addEventListener('click', checkArr);
 
-function showUsers() {
-   currentArr = clientsArr;
-   createTableRows(clientsArr);
+
+// при нажатии на categories
+function checkArr() {
+   let attr = this.dataset.category;
+
+   if (attr == "Paid") {
+      paidArr = clientsArr.filter(checkPaid);
+      actingArr = paidArr;
+   } else if ((attr == "Unpaid")) {
+      unpaidArr = clientsArr.filter(checkUnpaid);
+      actingArr = unpaidArr;
+   } else if ((attr == "Overdue")) {
+      overdueArr = clientsArr.filter(checkOverdue);
+      actingArr = overdueArr;
+   } else if ((attr == "All")) {
+      actingArr = clientsArr;
+   } 
+   pageCounter = 0;
+   start = 0;
+   end = +rowsPerPageValue;
+   // проверяем оба фильтра
+   checkFilters(actingArr);
+}
+
+
+// проверяем оба фильтра при переключении категорий
+function checkFilters(actingArr) {
+   // проверяем фильтр active / inactive
+   let checkedActiveInactiveArr = checkActiveInactive(actingArr);
+
+   // проверяем фильтр sort by
+   let sortedByArr = sortBy(checkedActiveInactiveArr);
+   createTableRows(sortedByArr);
    collectionClick();
-   checkPaginationPrevArrow();
-   paginationNextArrow.disabled = false;
-   checkRowsPerPageValue();
+   currentArr = sortedByArr;
+   showTotalElems(sortedByArr);
+   showCurrentElem(rowsPerPageValue, pageCounter);
+   checkMaxPage(rowsPerPageValue);
+   blockNextArrow();
+   checkPageCounter();
 }
 
 
 
-//  ==========  paid  ==========  //
+//  ==========  FILTER  ==========  //
 
-const categoryPaid = document.getElementById('paid');
-categoryPaid.addEventListener("click", showPaid);
+//  ==========  запускаем фильтр при выборе radio buttons  ==========  //
 
-// создаем массив с paid
-clientsArr.forEach((clientsObj) => {
-   if(clientsObj['payment status'] == 'Paid') {
-      paidArr.push(clientsObj);
+
+// запускает фильтр при нажатии на radio "sort by"
+function activateSortBy() {
+   // выбираем категорию all/paid/unpaid/overdue
+   let categoryArr;
+   if (categoryPaid.classList.contains('active')) {
+      paidArr = clientsArr.filter(checkPaid);
+      categoryArr = paidArr;
+   } else if (categoryUnpaid.classList.contains('active')) {
+      unpaidArr = clientsArr.filter(checkUnpaid);
+      categoryArr = unpaidArr;
+   } else if (categoryOverdue.classList.contains('active')) {
+      overdueArr = clientsArr.filter(checkOverdue);
+      categoryArr = overdueArr;
+   } else if (categoryAll.classList.contains('active')) {
+      categoryArr = clientsArr;
    }
-})
 
-function showPaid() {
-   currentArr = paidArr; // заменяем текущий массив клиентов на клиентов только paid
-   createTableRows(paidArr);
+   let checkedActiveInactiveArr = checkActiveInactive(categoryArr);
+   let finishArr = sortBy(checkedActiveInactiveArr);
+
+   createTableRows(finishArr);
    collectionClick();
-   checkPaginationPrevArrow();
-   paginationNextArrow.disabled = false;
-   checkRowsPerPageValue();
+   currentArr = finishArr;
+   showTotalElems(finishArr);
+   showCurrentElem(rowsPerPageValue, pageCounter);
+   checkMaxPage(rowsPerPageValue);
+   blockNextArrow();
 }
 
 
-
-//  ==========  unpaid  ==========  //
-
-const categoryUnpaid = document.getElementById('unpaid');
-categoryUnpaid.addEventListener("click", showUnpaid);
-
-// создаем массив с unpaid
-clientsArr.forEach((clientsObj) => {
-   if(clientsObj['payment status'] == 'Unpaid') {
-      unpaidArr.push(clientsObj);
+// запускает фильтр при нажатии на radio "active/inactive"
+function activateActiveInactive() {
+   // выбираем категорию all/paid/unpaid/overdue
+   let categoryArr;
+   if (categoryPaid.classList.contains('active')) {
+      paidArr = clientsArr.filter(checkPaid);
+      categoryArr = paidArr;
+   } else if (categoryUnpaid.classList.contains('active')) {
+      unpaidArr = clientsArr.filter(checkUnpaid);
+      categoryArr = unpaidArr;
+   } else if (categoryOverdue.classList.contains('active')) {
+      overdueArr = clientsArr.filter(checkOverdue);
+      categoryArr = overdueArr;
+   } else if (categoryAll.classList.contains('active')) {
+      categoryArr = clientsArr;
    }
-})
 
-function showUnpaid() {
-   currentArr = unpaidArr; // заменяем текущий массив клиентов на клиентов только unpaid
-   console.log(unpaidArr);
-   createTableRows(unpaidArr);
+   pageCounter = 0;
+   start = 0;
+   end = +rowsPerPageValue;
+
+   let checkedSortedArr = sortBy(categoryArr);
+   let finishArr = checkActiveInactive(checkedSortedArr);
+   currentArr = finishArr;
+   createTableRows(finishArr);
    collectionClick();
-   checkPaginationNextArrow(rowsPerPageValue);
-   checkRowsPerPageValue();
+   showTotalElems(finishArr);
+   showCurrentElem(rowsPerPageValue, pageCounter);
+   checkMaxPage(rowsPerPageValue);
+   blockNextArrow();
+   checkPageCounter();
 }
 
 
 
-//  ==========  overdue  ==========  //
+//  ==========  сама проверка active/inactive и сортировка  ==========  //
 
-const categoryOverdue = document.getElementById('overdue');
-categoryOverdue.addEventListener("click", showOverdue);
-
-// создаем массив с overdue
-clientsArr.forEach((clientsObj) => {
-   if(clientsObj['payment status'] == 'Overdue') {
-      overdueArr.push(clientsObj);
+// проверка на active/inactive
+function checkActiveInactive(actingArr) {
+   let activeInactiveArr;
+   
+   if (activeRadioButton.checked == true) {
+      activeArr = actingArr.filter(checkActive);
+      activeInactiveArr = activeArr;
+   } else if (inactiveRadioButton.checked == true) {
+      inactiveArr = actingArr.filter(checkInactive);
+      activeInactiveArr = inactiveArr;
+   } else {
+      activeInactiveArr = actingArr;
    }
-})
 
-
-function showOverdue() {
-   currentArr = overdueArr; // заменяем текущий массив клиентов на клиентов только overdue
-   createTableRows(overdueArr);
-   collectionClick();
-   checkPaginationNextArrow(rowsPerPageValue);
-   checkRowsPerPageValue();
-
+   return activeInactiveArr;
 }
 
 
+// сортировка
+function sortBy(checkedActiveInactiveArr) {
+   if (firstNameRadioButton.checked == true) {
+      checkedActiveInactiveArr = filterBy('first name', checkedActiveInactiveArr);
+   } else if (lastNameRadioButton.checked == true) {
+      checkedActiveInactiveArr = filterBy('last name', checkedActiveInactiveArr);
+   } else if (dueDateRadioButton.checked == true) {
+      checkedActiveInactiveArr = filterBy('payment info', checkedActiveInactiveArr);
+   } else if (lastLoginRadioButton.checked == true) {
+      checkedActiveInactiveArr = filterBy('last login', checkedActiveInactiveArr);
+   } else {
+      checkedActiveInactiveArr = checkedActiveInactiveArr;
+   }
+
+   return checkedActiveInactiveArr;
+}
+
+
+//  ==========  check paid / unpaid / overdue / active / inactive  ==========  //
+
+function checkPaid(elem) {
+   if (elem['payment status'] == 'Paid') {
+      return true;
+   }
+}
+
+function checkUnpaid(elem) {
+   if (elem['payment status'] == 'Unpaid') {
+      return true;
+   }
+}
+
+function checkOverdue(elem) {
+   if (elem['payment status'] == 'Overdue') {
+      return true;
+   }
+}
+
+function checkActive(elem) {
+   if (elem['user status'] == 'Active') {
+      return true;
+   }
+}
+
+function checkInactive(elem) {
+   if (elem['user status'] == 'Inactive') {
+      return true;
+   }
+}
+
+
+// функция, которая фильтрует по заданному параметру
+function filterBy(param, arr) {
+   let sortedArr = arr.slice();
+   sortedArr.sort((a, b) => a[param] > b[param] ? 1 : -1);
+   return sortedArr;
+}
 
 
 
@@ -441,21 +545,20 @@ function showOverdue() {
 
 function countTotalAmount() {
    let totalSum = 0;
-
-   let totalSumArr = clientsArr.filter(checkTotalSum); // создаем отфильтрованный массив с rows только active
+   let totalSumArr = clientsArr.filter(checkTotalSum);
    
    function checkTotalSum(elem) {
       if (elem['payment status'] == 'Paid') {
          return elem.amount;
       }
    }
+
    totalSumArr.forEach((user) => {
       totalSum += user.amount;
    })
 
    totalAmount.innerHTML = '$' + totalSum.toFixed(2);
 }
-
 
 
 
@@ -473,87 +576,36 @@ filterMenu.addEventListener("click", function(e) {
 
 
 
-//  ==========  FILTER  ==========  //
 
-let newClientsArr; // создаем копию исходного массива, чтобы его не менять
+//  ==========  TOP CATEGORIES ITEMS ==========  //
 
+topCategoriesItems.forEach((topCategoriesItem) => {
+   topCategoriesItem.addEventListener("click", function() {
+      // всем убираем класс active
+      topCategoriesItems.forEach((topCategoriesItem) => {
+         topCategoriesItem.classList.remove('active');
+      })
 
-//  ==========  first name  ==========  //
-
-function filterByFirstName(newClientsArr) {
-   newClientsArr = currentArr.slice();
-   newClientsArr.sort((a, b) => a['first name'] > b['first name'] ? 1 : -1);
-   createTableRows(newClientsArr);
-   currentArr = newClientsArr;
-}
-
-
-//  ==========  last name  ==========  //
-
-function filterByLastName(newClientsArr) {
-   newClientsArr = currentArr.slice();
-   newClientsArr.sort((a, b) => a['last name'] > b['last name'] ? 1 : -1);
-   createTableRows(newClientsArr);
-}
+      // кликнутому добавляем класс active
+      this.classList.add('active');
+   })
+})
 
 
-//  ==========  due date  ==========  //
 
-function filterByDueDate(newClientsArr) {
-   newClientsArr = currentArr.slice();
-   newClientsArr.sort((a, b) => a['payment info'] > b['payment info'] ? 1 : -1);
-   createTableRows(newClientsArr);
-}
+//  ==========  CHECK ALL CHECKBOXES  ==========  //
 
-
-//  ==========  last login  ==========  //
-
-function filterByLastLogin(newClientsArr) {
-   newClientsArr = currentArr.slice();
-   newClientsArr.sort((a, b) => a['last login'] > b['last login'] ? 1 : -1);
-   createTableRows(newClientsArr);
-}
-
-
-//  ==========  all  ==========  //
-
-function showAll() {
-   newClientsArr = currentArr.slice();
-   createTableRows(newClientsArr);
-   collectionClick();
-}
-
-
-//  ==========  active  ==========  //
-
-function showActiveUsers(newClientsArr) {
-   newClientsArr = currentArr.slice();
-   let newClientsArrActive = newClientsArr.filter(checkActive); // создаем отфильтрованный массив с rows только active
-   
-   function checkActive(elem) {
-      if (elem['user status'] == 'Active') {
-         return elem;
-      }
+function checkAllCheckboxes() {
+   let checkboxes = document.querySelectorAll('.checkbox');
+   if(checkboxAll.checked) {
+      checkboxes.forEach((checkbox) => {
+         checkbox.checked = true;
+      })
+   } else {
+      checkboxes.forEach((checkbox) => {
+         checkbox.checked = false;
+      })
    }
-   
-   createTableRows(newClientsArrActive);
-   collectionClick();
-}
-
-
-//  ==========  inactive  ==========  //
-
-function showInactiveUsers(newClientsArr) {
-   newClientsArr = currentArr.slice();
-   let newClientsArrActive = newClientsArr.filter(checkInactive); // создаем отфильтрованный массив с rows только inactive
-   
-   function checkInactive(elem) {
-      if (elem['user status'] == 'Inactive') {
-         return elem;
-      }
-   }
-   createTableRows(newClientsArrActive);
-   collectionClick();
 }
 
 
@@ -613,26 +665,27 @@ function checkMonth(month) {
 
 searchInput.addEventListener('keydown', function(event) {
    if (event.code == 'Enter' || event.code == 'NumpadEnter') {
-
       let searchValue = searchInput.value.toLowerCase();
-      let counter = 0; // счетчик скрытых table-rows
-      console.log(collection);
-      
-      for (let i = 0; i < collection.length; i++) {
-         if(collection[i].classList.contains('hidden')) {
-            collection[i].classList.remove('hidden');
-         }
+      let searchArr = [];
 
-         let userName = collection[i].querySelector('.user__name').innerHTML.toLowerCase();
-         if(userName.indexOf(searchValue) === -1) {
-            collection[i].classList.add('hidden');
-            counter++;
+      clientsArr.forEach((elem) => {
+         let name = (elem['first name'] + elem['last name']).toLowerCase();
+         if(name.indexOf(searchValue) != -1) {
+            searchArr.push(elem);
          }
-      } 
-
-      if (collection.length == counter) {
+      })
+   
+      if (searchArr.length == 0) {
          error.classList.add('show');
          setTimeout(hideError, 2000);
+      } else {
+         createTableRows(searchArr);
+         collectionClick();
+         currentArr = searchArr;
+         showTotalElems();
+         showCurrentElem();
+         checkMaxPage(rowsPerPageValue);
+         checkPageCounter();
       }
    }
 })
@@ -640,3 +693,20 @@ searchInput.addEventListener('keydown', function(event) {
 function hideError() {
    error.classList.remove('show');
 }
+
+
+
+// ============  DROPDOWN CUSTOMIZATION  ============ 
+
+const multiDefault = () => {
+   const select = document.querySelector('#rows-per-page');
+   const choices = new Choices(select, {
+      searchEnabled: false,
+      itemSelectText: '',
+   });
+};
+
+multiDefault();
+ 
+
+

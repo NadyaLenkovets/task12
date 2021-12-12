@@ -1300,7 +1300,7 @@ body {
 }
 
 .choices__list--single {
-  padding: 7px 28px 0px 4px;
+  padding: 7px 28px 7px 4px;
 }
 
 .choices__list--dropdown {
@@ -1325,7 +1325,8 @@ body {
   height: 11px;
   border: none;
   background: url(../img/triangle.svg) no-repeat transparent;
-  top: 49%;
+  top: 50%;
+  left: 33px;
 }
 
 .choices[data-type*=select-one].is-open::after {

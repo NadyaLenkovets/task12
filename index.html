@@ -19,10 +19,10 @@
          <h1 class="title">Table Heading</h1>
          <div class="top">
             <div class="top-categories">
-               <div class="top-categories__item active" id="all">All</div>
-               <div class="top-categories__item" id="paid">Paid</div>
-               <div class="top-categories__item" id="unpaid">Unpaid</div>
-               <div class="top-categories__item" id="overdue">Overdue</div>
+               <div class="top-categories__item active" id="all" data-category="All">All</div>
+               <div class="top-categories__item" id="paid" data-category="Paid">Paid</div>
+               <div class="top-categories__item" id="unpaid" data-category="Unpaid">Unpaid</div>
+               <div class="top-categories__item" id="overdue" data-category="Overdue">Overdue</div>
             </div>
             <div class="top-amount">
                Total payable amount: <span class="total-amount" id="total-amount">$900.00</span> USD
@@ -40,31 +40,31 @@
                      <h4 class="filter-menu__title">Sort by:</h4>
                      <div class="sort-by">
                         <div class="sort-by__item">
-                           <input class="sort-by__button" name="sort-by" id="default" type="radio" onclick="createTableRows(clientsArr)">
+                           <input class="sort-by__button" name="sort-by" id="default" type="radio" onclick="activateSortBy()">
                            <label class="sort-by__label" for="default">Default
                               <span></span>
                            </label>
                         </div>
                         <div class="sort-by__item">
-                           <input class="sort-by__button" name="sort-by" id="first-name" type="radio" onclick="filterByFirstName(newClientsArr)">
+                           <input class="sort-by__button" name="sort-by" id="first-name" type="radio" onclick="activateSortBy()">
                            <label class="sort-by__label" for="first-name">First Name
                               <span></span>
                            </label>
                         </div>
                         <div class="sort-by__item">
-                           <input class="sort-by__button" name="sort-by" id="last-name" type="radio" onclick="filterByLastName(newClientsArr)">
+                           <input class="sort-by__button" name="sort-by" id="last-name" type="radio" onclick="activateSortBy()">
                            <label class="sort-by__label" for="last-name">Last Name
                               <span></span>
                            </label>
                         </div>
                         <div class="sort-by__item">
-                           <input class="sort-by__button" name="sort-by" id="due-date" type="radio" onclick="filterByDueDate(newClientsArr)">
+                           <input class="sort-by__button" name="sort-by" id="due-date" type="radio" onclick="activateSortBy()">
                            <label class="sort-by__label" for="due-date">Due Date
                               <span></span>
                            </label>
                         </div>
                         <div class="sort-by__item">
-                           <input class="sort-by__button" name="sort-by" id="last-login" type="radio" onclick="filterByLastLogin(newClientsArr)">
+                           <input class="sort-by__button" name="sort-by" id="last-login" type="radio" onclick="activateSortBy()">
                            <label class="sort-by__label" for="last-login">Last Login
                               <span></span>
                            </label>
@@ -73,19 +73,19 @@
                      <h4 class="filter-menu__title">Users:</h4>
                      <div class="users">
                         <div class="users__item">
-                           <input class="users__button" name="users" id="all-users" type="radio" onclick="showAll()">
+                           <input class="users__button" name="users" id="all-users" type="radio" onclick="activateActiveInactive()">
                            <label class="users__label" for="all-users">All
                               <span></span>
                            </label>
                         </div>
                         <div class="users__item">
-                           <input class="users__button" name="users" id="active" type="radio" onclick="showActiveUsers(newClientsArr)">
+                           <input class="users__button" name="users" id="active" type="radio" onclick="activateActiveInactive()">
                            <label class="users__label" for="active">Active
                               <span></span>
                            </label>
                         </div>
                         <div class="users__item">
-                           <input class="users__button" name="users" id="inactive" type="radio" onclick="showInactiveUsers(newClientsArr)">
+                           <input class="users__button" name="users" id="inactive" type="radio" onclick="activateActiveInactive()">
                            <label class="users__label" for="inactive">Inactive
                               <span></span>
                            </label>
