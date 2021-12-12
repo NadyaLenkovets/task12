@@ -382,8 +382,8 @@ function checkFilters(actingArr) {
    createTableRows(sortedByArr);
    collectionClick();
    currentArr = sortedByArr;
-   showTotalElems(sortedByArr);
-   showCurrentElem(rowsPerPageValue, pageCounter);
+   showTotalElems();
+   showCurrentElem();
    checkMaxPage(rowsPerPageValue);
    blockNextArrow();
    checkPageCounter();
@@ -419,8 +419,8 @@ function activateSortBy() {
    createTableRows(finishArr);
    collectionClick();
    currentArr = finishArr;
-   showTotalElems(finishArr);
-   showCurrentElem(rowsPerPageValue, pageCounter);
+   showTotalElems();
+   showCurrentElem();
    checkMaxPage(rowsPerPageValue);
    blockNextArrow();
 }
@@ -452,8 +452,8 @@ function activateActiveInactive() {
    currentArr = finishArr;
    createTableRows(finishArr);
    collectionClick();
-   showTotalElems(finishArr);
-   showCurrentElem(rowsPerPageValue, pageCounter);
+   showTotalElems();
+   showCurrentElem();
    checkMaxPage(rowsPerPageValue);
    blockNextArrow();
    checkPageCounter();
